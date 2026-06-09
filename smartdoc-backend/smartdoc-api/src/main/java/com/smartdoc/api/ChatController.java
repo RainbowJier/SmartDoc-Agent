@@ -57,6 +57,16 @@ public class ChatController {
         }
     }
 
+    /**
+     * Send a chat message and return an SSE streaming response.
+     * <p>
+     * Only one active stream is allowed per session at a time; concurrent requests
+     * are rejected with an error event. After the stream completes, a title is
+     * automatically generated for sessions that do not yet have one.
+     *
+     * @param request request body containing sessionId (optional, defaults to "default") and message
+     * @return SseEmitter that streams LLM tokens via TEXT_EVENT_STREAM, ending with [DONE]
+     */
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter chat(@Valid @RequestBody ChatReq request) {
         String sessionId = request.sessionId() != null ? request.sessionId() : "default";
@@ -167,6 +177,15 @@ public class ChatController {
         return "";
     }
 
+    /**
+     * Get the chat history for a specific session.
+     * <p>
+     * Filters out TOOL_EXECUTION_RESULT messages, maps message types to
+     * "user" / "assistant" / "system", and strips RAG-injected prompt text.
+     *
+     * @param sessionId the session ID
+     * @return list of history messages for the session
+     */
     @GetMapping("/history/{sessionId}")
     public AjaxResult<List<ChatHistoryItemResp>> getHistory(@PathVariable String sessionId) {
         List<ChatHistoryItemResp> history = sessionManager.getSessionHistory(sessionId).stream()
@@ -183,6 +202,12 @@ public class ChatController {
         return AjaxResult.success(history);
     }
 
+    /**
+     * Clear the chat history for a specific session.
+     *
+     * @param sessionId the session ID to clear
+     * @return operation result
+     */
     @GetMapping("/session/clear/{sessionId}")
     public AjaxResult<Void> clearSession(@PathVariable String sessionId) {
         busySessions.remove(sessionId);
@@ -190,6 +215,13 @@ public class ChatController {
         return AjaxResult.success();
     }
 
+    /**
+     * Get metadata for all sessions.
+     * <p>
+     * Returns session ID, title, creation time, last active time, message count, and status.
+     *
+     * @return list of session metadata
+     */
     @GetMapping("/sessions")
     public AjaxResult<List<SessionMetaResp>> getSessions() {
         List<SessionMetaResp> result = sessionManager.getSessionList().stream()
@@ -205,29 +237,43 @@ public class ChatController {
         return AjaxResult.success(result);
     }
 
+    /**
+     * Rename the title of a specific session.
+     *
+     * @param request request body containing sessionId and new title (must not be blank, max 100 chars)
+     * @return operation result
+     */
     @PutMapping("/session/title")
     public AjaxResult<Void> renameSession(@Valid @RequestBody RenameSessionReq request) {
         if (request.sessionId() == null || request.sessionId().isBlank()) {
-            return AjaxResult.badRequest("sessionId 不能为空");
+            return AjaxResult.badRequest("sessionId must not be blank");
         }
         if (request.title() == null || request.title().isBlank()) {
-            return AjaxResult.badRequest("标题不能为空");
+            return AjaxResult.badRequest("Title must not be blank");
         }
         if (request.title().length() > 100) {
-            return AjaxResult.badRequest("标题不能超过 100 字符");
+            return AjaxResult.badRequest("Title must not exceed 100 characters");
         }
         sessionManager.renameSession(request.sessionId(), request.title());
         return AjaxResult.success();
     }
 
+    /**
+     * Regenerate the session title based on the first user message.
+     * <p>
+     * Invokes the TitleGenerator LLM to produce a new title and updates the session metadata.
+     *
+     * @param request request body containing sessionId
+     * @return the newly generated title
+     */
     @PostMapping("/session/title/regenerate")
     public AjaxResult<String> regenerateTitle(@Valid @RequestBody RenameSessionReq request) {
         if (request.sessionId() == null || request.sessionId().isBlank()) {
-            return AjaxResult.badRequest("sessionId 不能为空");
+            return AjaxResult.badRequest("sessionId must not be blank");
         }
         List<ChatMessage> history = sessionManager.getSessionHistory(request.sessionId());
         if (history.isEmpty()) {
-            return AjaxResult.badRequest("无法生成标题：会话无历史消息");
+            return AjaxResult.badRequest("Cannot generate title: session has no history messages");
         }
         String firstUserMessage = history.stream()
                 .filter(m -> m instanceof UserMessage)
@@ -235,25 +281,36 @@ public class ChatController {
                 .findFirst()
                 .orElse(null);
         if (firstUserMessage == null) {
-            return AjaxResult.badRequest("无法生成标题：会话无用户消息");
+            return AjaxResult.badRequest("Cannot generate title: session has no user messages");
         }
         String title = titleGenerator.generate(firstUserMessage);
         sessionManager.renameSession(request.sessionId(), title);
         return AjaxResult.success(title);
     }
 
+    /**
+     * Batch delete multiple sessions.
+     *
+     * @param request request body containing a list of sessionIds (max 50 per request)
+     * @return operation result
+     */
     @PostMapping("/sessions/batch")
     public AjaxResult<Void> batchDeleteSessions(@Valid @RequestBody BatchDeleteSessionReq request) {
         if (request.sessionIds() == null || request.sessionIds().isEmpty()) {
-            return AjaxResult.badRequest("sessionIds 不能为空");
+            return AjaxResult.badRequest("sessionIds must not be empty");
         }
         if (request.sessionIds().size() > 50) {
-            return AjaxResult.badRequest("一次最多删除 50 个会话");
+            return AjaxResult.badRequest("Cannot delete more than 50 sessions at once");
         }
         sessionManager.batchDeleteSessions(request.sessionIds());
         return AjaxResult.success();
     }
 
+    /**
+     * Clear all sessions and their history.
+     *
+     * @return operation result
+     */
     @PostMapping("/sessions/clear")
     public AjaxResult<Void> clearAllSessions() {
         sessionManager.clearAllSessions();

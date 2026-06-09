@@ -229,9 +229,6 @@ export const useChatStore = defineStore('chat', () => {
         deleteSession,
         sendMessage,
         stopStreaming,
-        renameSession,
-        regenerateTitle,
-        batchDeleteSessionIds,
         clearAllSessions
     }
 })
