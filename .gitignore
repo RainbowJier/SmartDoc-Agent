@@ -21,3 +21,51 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+/smartdoc-frontend/package-lock.json
+/smartdoc-frontend/node_modules/
+/.codegraph/
+/smartdoc-frontend/node_modules/
+/smartdoc-backend/smartdoc-api/target/
+/smartdoc-backend/*/target/
+
+# Large files / binaries
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.7z
+*.rar
+*.exe
+*.msi
+*.dmg
+*.dll
+*.so
+*.dylib
+*.class
+*.pyc
+__pycache__/
+*.log
+*.bin
+*.iso
+*.npy
+*.h5
+*.pkl
+*.onnx
+*.pt
+*.pth
+model_cache/
+
+# Media files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.flv
+*.mp3
+*.wav
+*.flac
+*.wmv
+
+# Large documents
+*.pdf

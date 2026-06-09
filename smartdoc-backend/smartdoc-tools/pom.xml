@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.smartdoc</groupId>
+        <artifactId>smartdoc-backend</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>smartdoc-tools</artifactId>
+    <name>SmartDoc Tools</name>
+    <description>Agent 工具 - 对应 Step 06 的 @Tool 注解方法</description>
+
+    <dependencies>
+        <!-- 依赖 RAG 模块（工具可能需要检索知识库） -->
+        <dependency>
+            <groupId>com.smartdoc</groupId>
+            <artifactId>smartdoc-rag</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- 依赖 LLM 模块（工具注解来自 langchain4j 核心） -->
+        <dependency>
+            <groupId>com.smartdoc</groupId>
+            <artifactId>smartdoc-chatModel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

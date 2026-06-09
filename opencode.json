@@ -1,0 +1,56 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "deepseek": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "DeepSeek",
+      "options": {
+        "baseURL": "https://api.deepseek.com/v1"
+      },
+      "models": {
+        "deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash",
+          "limit": {
+            "context": 1048576,
+            "output": 262144
+          },
+          "options": {
+            "reasoningEffort": "high",
+            "thinking": {
+              "type": "enabled",
+              "budgetTokens": 8000
+            }
+          },
+          "interleaved": {
+            "field": "reasoning_content"
+          }
+        }
+      }
+    }
+  },
+  "model": "deepseek/deepseek-v4-flash",
+  "small_model": "deepseek/deepseek-v4-flash",
+  "skills": {
+    "paths": [
+      ".opencode/skills"
+    ]
+  },
+  "mcp": {
+    "codegraph": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@colbymchenry/codegraph",
+        "serve",
+        "--mcp"
+      ],
+      "enabled": true
+    },
+    "drawio": {
+      "type": "remote",
+      "url": "https://mcp.draw.io/mcp",
+      "enabled": true
+    }
+  }
+}

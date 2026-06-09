@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="smartdoc-common" />
+        <module name="smartdoc-api" />
+        <module name="smartdoc-chat" />
+        <module name="smartdoc-tools" />
+        <module name="smartdoc-chatModel" />
+        <module name="smartdoc-rag" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="smartdoc-api" options="-parameters" />
+      <module name="smartdoc-chat" options="-parameters" />
+      <module name="smartdoc-chatModel" options="-parameters" />
+      <module name="smartdoc-common" options="-parameters" />
+      <module name="smartdoc-rag" options="-parameters" />
+      <module name="smartdoc-tools" options="-parameters" />
+    </option>
+  </component>
+</project>

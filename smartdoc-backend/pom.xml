@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 【Step 06 对照】Step 06 是单个 Java 项目，所有代码在一个 pom.xml 中。
+         Spring Boot 多模块项目将代码按职责拆分到 5 个子模块，
+         每个模块有独立的 pom.xml，通过 <modules> 聚合。 -->
+
+    <!-- 继承 Spring Boot 父 POM，获得依赖管理、插件配置等 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.smartdoc</groupId>
+    <artifactId>smartdoc-backend</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>SmartDoc Agent (Step 07)</name>
+    <description>Spring Boot 多模块教学项目 - 从 Step 06 Plain Java 演进到 Spring Boot 架构</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <langchain4j.version>1.13.0</langchain4j.version>
+        <langchain4j-beta.version>1.13.0-beta23</langchain4j-beta.version>
+    </properties>
+
+    <!-- 【Step 06 对照】Step 06 没有 Maven，所有 .java 文件手动编译。
+         多模块 Maven 让每个模块独立编译、测试、版本管理。 -->
+    <modules>
+        <module>smartdoc-common</module>
+        <module>smartdoc-chatModel</module>
+        <module>smartdoc-rag</module>
+        <module>smartdoc-tools</module>
+        <module>smartdoc-chat</module>
+        <module>smartdoc-api</module>
+    </modules>
+
+    <!-- LangChain4j BOM 统一管理所有 LangChain4j 依赖的版本 -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-bom</artifactId>
+                <version>${langchain4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
